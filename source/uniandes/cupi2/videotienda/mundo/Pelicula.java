@@ -59,7 +59,7 @@ public class Pelicula
     	titulo = unTitulo;
     	disponibles = new ArrayList<Copia>(); 
     	prestadas = new ArrayList<Copia>();
-    	codigoSiguienteCopia = 1;
+    	codigoSiguienteCopia = 1; // en este campo el codigo debe ser aleatorio y unico
     }
 
     //-----------------------------------------------------------------
@@ -73,8 +73,11 @@ public class Pelicula
      */
     public int agregarCopia( )
     {
-    	
-    	//TODO implementar. Recuerde retornar lo indicado en la documentaci�n. 
+    	Copia copiaNueva = new Copia(codigoSiguienteCopia);
+    	disponibles.add(copiaNueva);
+    	int codigoCreado = codigoSiguienteCopia;
+    	codigoSiguienteCopia++;
+        return codigoCreado;
     }
 
     /**
