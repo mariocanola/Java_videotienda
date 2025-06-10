@@ -17,6 +17,8 @@ import java.util.ArrayList;
 /**
  * Esta clase representa una pel�cula que se encuentra en la videotienda y
  * de la cual puede haber copias disponibles o prestadas.
+ * @param <Copia>
+ * @param <disponibles>
  */ 
 public class Pelicula
 {
@@ -43,7 +45,7 @@ public class Pelicula
     /**
      * N�mero de la siguiente copia a adicionar
      */
-    private int codigoSiguienteCopia;
+	private int codigoSiguienteCopia;
 
     //-----------------------------------------------------------------
     // Constructores
@@ -87,6 +89,13 @@ public class Pelicula
      */
     public Copia alquilarCopia( )
     {
+    	if (disponibles.size() > 0) {
+            Copia copia = disponibles.get(0);
+            disponibles.remove(0);
+            prestadas.add(copia);
+            return copia;
+        }
+        return null;
     	//TODO implementar. Recuerde retornar lo indicado en la documentaci�n.
     }
 
