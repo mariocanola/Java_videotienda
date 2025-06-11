@@ -35,11 +35,13 @@ public class VideoTienda
     /**
      * Clientes
      */
+    private ArrayList<Cliente> clientes;
     //TODO declare el atributo
 
     /**
      * Catálogo de películas
      */
+    private ArrayList<Pelicula> catalogo;
     //TODO declare el atributo
     
     //-----------------------------------------------------------------
@@ -48,10 +50,14 @@ public class VideoTienda
 
     /**
      * Crea una videotienda sin películas registradas.
-     * @param unaTarifa Tarifa diaria de alquiler. tarifa > 0.
+return disponibles.size() + prestadas.size();* @param unaTarifa Tarifa diaria de alquiler. tarifa > 0.
      */
     public VideoTienda( int unaTarifa )
     {
+    	tarifaDiaria = unaTarifa;
+    	clientes = new ArrayList<Cliente>();
+        catalogo = new ArrayList<Pelicula>();
+    	
     	//TODO implementar inicializando los atributos
     }
 
@@ -120,6 +126,8 @@ public class VideoTienda
      */
     public void afiliarCliente( String cedula, String nombre, String direccion ) throws Exception
     {
+    	Cliente nuevoCliente = new Cliente(cedula, nombre, direccion);
+        clientes.add(nuevoCliente);
     	//TODO implementar
     }
     
@@ -130,6 +138,12 @@ public class VideoTienda
      */
     public Cliente buscarCliente( String cedula )
     {
+    	for (Cliente cliente : clientes) {
+            if (cliente.darCedula().equals(cedula)) {
+                return cliente;
+            }
+        }
+        return null;
     	//TODO implementar
     }
 
@@ -145,6 +159,10 @@ public class VideoTienda
      */
     public void cargarSaldoCliente( String cedula, int monto ) throws Exception
     {
+    	Cliente cliente = buscarCliente(cedula);
+        if (cliente != null) {
+            cliente.cargarSaldo(monto);
+        }
     	//TODO implementar
     }
 

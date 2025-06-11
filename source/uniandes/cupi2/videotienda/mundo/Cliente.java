@@ -169,7 +169,7 @@ public class Cliente {
      * <b>post: </b> La copia se remueve de la lista de copias alquiladas.
      * @param pelicula Título de la película a devolver. pelicula != null.
      * @param codigo Código de la copia a devolver. codigo > 0.
-     */x	
+     */
 	public void devolverCopia(String pelicula, int codigo)
 	{
 		
