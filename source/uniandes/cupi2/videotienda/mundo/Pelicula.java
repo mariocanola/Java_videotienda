@@ -35,7 +35,7 @@ public class Pelicula
     /**
      * Lista de copias disponibles
      */
-    private ArrayList<Copia> disponibles;
+	private ArrayList<Copia> disponibles;
 
     /**
      * Lista de copias prestadas
@@ -75,7 +75,7 @@ public class Pelicula
      */
     public int agregarCopia( )
     {
-    	Copia copiaNueva = new Copia(codigoSiguienteCopia);
+    	Copia copiaNueva = new Copia(titulo, codigoSiguienteCopia);
     	disponibles.add(copiaNueva);
     	int codigoCreado = codigoSiguienteCopia;
     	codigoSiguienteCopia++;
@@ -96,7 +96,6 @@ public class Pelicula
             return copia;
         }
         return null;
-    	//TODO implementar. Recuerde retornar lo indicado en la documentaci�n.
     }
 
     /**
@@ -105,11 +104,24 @@ public class Pelicula
      * @param codigoCopia C�digo de la copia que se quiere devolver.
      * @throws Exception Si la copia a devolver no est� prestada.
      */
-    public void devolverCopiaint(int codigoCopia) 
+    public void devolverCopia(int codigoCopia) throws Exception 
     {
-    	
+    	 Copia copiaADevolver = null;
+         
+         for (Copia copia : prestadas) {
+             if (copia.darCodigo() == codigoCopia) {
+                 copiaADevolver = copia;
+                 break;
+             }
+         }
+         
+         if (copiaADevolver == null) {
+             throw new Exception("La copia no está prestada");
+         }
+         
+         prestadas.remove(copiaADevolver);
+         disponibles.add(copiaADevolver);
     }
-     //TODO Definir la signatura del m�todo de acuerdo a la documentaci�n e implementarlo.
 
     /**
      * Retorna el t�tulo de la pel�cula.
@@ -126,9 +138,8 @@ public class Pelicula
      */
     public int darTotalCopias()
     {
-    	
+    	return disponibles.size() + prestadas.size();
     }
-    //TODO Definir la signatura del m�todo de acuerdo a la documentaci�n e implementarlo.
 
     /**
      * Retorna el n�mero de copias disponibles
@@ -136,7 +147,6 @@ public class Pelicula
      */
     public int darNumeroDisponibles()
     {
-    	
+    	return disponibles.size();
     }
-    //TODO Definir la signatura del m�todo de acuerdo a la documentaci�n e implementarlo.
 }
