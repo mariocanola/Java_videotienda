@@ -95,9 +95,13 @@ public class Cliente {
 		return direccion; 
 	}
 	
-	public void alquilarCopia()
+	/**
+     * Registra una copia como alquilada por el cliente.
+     * @param copia Copia alquilada.
+     */
+	public void alquilarCopia(Copia copia)
 	{
-		
+		 copiasAlquiladas.add(copia);
 	}
 	
 	/**
@@ -140,10 +144,15 @@ public class Cliente {
 		 return copiasAlquiladas;
 	}
 	
+	/**
+     * Retorna el número de copias alquiladas por el cliente.
+     * @return Número de copias alquiladas.
+     */
 	public int darNumeroAlquiladas()
 	{
-		 
+		 return copiasAlquiladas.size();
 	}
+	
 	/**
      * Busca una copia especÃ­fica entre las pelÃ­culas alquiladas por el cliente.
      * @param pelicula TÃ­tulo de la pelÃ­cula a buscar. pelicula != null.
@@ -159,8 +168,16 @@ public class Cliente {
 	            .orElse(null);
 	    }
 	 
+	 /**
+	     * Registra la devolución de una copia alquilada.
+	     * @param titulo Título de la película de la copia. titulo != null.
+	     * @param codigo Código de la copia a devolver. codigo > 0.
+	     */
 	 public void devolverCopia(String pelicula, int codigo)
 	 {
-		 
+		 Copia copia = buscarPeliculaAlquilada(pelicula, codigo);
+	        if (copia != null) {
+	            copiasAlquiladas.remove(copia);
+	        } 
 	 }
 }

@@ -153,16 +153,18 @@ return disponibles.size() + prestadas.size();* @param unaTarifa Tarifa diaria de
     }
     
     /**
-     * Busca la pelicula dada la cédula.
-     * @param cedula Cédula del cliente. cedula != null.
-     * @return el cliente correspondiente a la cédula, o null si no hay un cliente con la cédula dada.
+     * Busca la película dado el título.
+     * @param titulo Título de la película. titulo != null.
+     * @return La película correspondiente al título, o null si no se encuentra.
      */
-    public Pelicula bucarPelicula (String titulo)
-    {
-    	
+    public Pelicula buscarPelicula(String titulo) {
+        for (Pelicula p : catalogo) {
+            if (p.darTitulo().equals(titulo)) {
+                return p;
+            }
+        }
+        return null;
     }
-
-
 
     /**
      * Adiciona el monto dado al saldo disponible del cliente. <br>
@@ -198,51 +200,24 @@ return disponibles.size() + prestadas.size();* @param unaTarifa Tarifa diaria de
      * @throws Exception Si no hay copias disponibles.
      * @throws Exception Si el saldo del cliente no es suficiente para el alquiler.
      */
-    public int alquilarPelicula( String titulo, String cedula ) throws Exception
-    {
-    	// 1. Buscar al cliente
+    public void alquilarPelicula(String titulo, String cedula) throws Exception {
+
         Cliente cliente = buscarCliente(cedula);
         if (cliente == null) {
             throw new Exception("Cliente no encontrado.");
         }
 
-        // 2. Buscar la película
-        Pelicula pelicula = null;
-        for (Pelicula p : catalogo) {
-            if (p.darTitulo().equals(titulo)) {
-                pelicula = p;
-                break;
-            }
-        }
-
+        Pelicula pelicula = buscarPelicula(titulo);
         if (pelicula == null) {
             throw new Exception("Película no encontrada.");
         }
 
-        // 3. Verificar si hay copias disponibles
         if (pelicula.darNumeroDisponibles() == 0) {
-            throw new Exception("No hay copias disponibles para la película.");
+            throw new Exception("No hay copias disponibles para alquilar.");
         }
 
-        // 4. Verificar si el cliente tiene saldo suficiente
-        if (cliente.darSaldo() < tarifaDiaria) {
-            throw new Exception("Saldo insuficiente para alquilar la película.");
-        }
-
-        // 5. Alquilar la copia desde la película
         Copia copia = pelicula.alquilarCopia();
-        if (copia == null) {
-            throw new Exception("Error al alquilar la copia.");
-        }
-
-        // 6. Registrar la copia en el cliente
-        cliente.darAlquiladas(copia);
-
-        // 7. Descontar el saldo
-        cliente.cargarSaldo(-tarifaDiaria);
-
-        // 8. Devolver el código de la copia
-        return copia.darCodigo();
+        cliente.alquilarCopia(copia);
     }
     	//TODO implementar
 
@@ -266,30 +241,38 @@ return disponibles.size() + prestadas.size();* @param unaTarifa Tarifa diaria de
             throw new Exception("El cliente no tiene esta copia alquilada.");
         }
 
-        Pelicula pelicula = null;
-        for (Pelicula p : catalogo) {
-            if (p.darTitulo().equals(titulo)) {
-                pelicula = p;
-                break;
-            }
-        }
-
+        Pelicula pelicula = buscarPelicula(titulo);
         if (pelicula == null) {
             throw new Exception("Película no encontrada en el catálogo.");
         }
 
         pelicula.devolverCopia(numeroCopia);
-        cliente.devolverCopia(copia);
+        cliente.devolverCopia(titulo, numeroCopia);
     }
     
-    public void agregarCopiaPelicula(String titulo) 
-    {
-    	
+    /**
+     * Agrega una nueva copia a la película con el título dado.
+     * @param titulo Título de la película. titulo != null.
+     * @throws Exception Si la película no existe en el catálogo.
+     */
+    public void agregarCopiaPelicula(String titulo) throws Exception {
+        Pelicula pelicula = buscarPelicula(titulo);
+        if (pelicula == null) {
+            throw new Exception("Película no encontrada: " + titulo);
+        }
+        pelicula.agregarCopia();
     }
     
-    public void modificarTarifa(int nuevaTarifa)
-    {
-    	
+    /**
+     * Modifica la tarifa diaria de alquiler.
+     * @param nuevaTarifa Nueva tarifa. nuevaTarifa > 0.
+     * @throws Exception Si la nueva tarifa no es válida.
+     */
+    public void modificarTarifa(int nuevaTarifa) throws Exception {
+        if (nuevaTarifa <= 0) {
+            throw new Exception("La tarifa debe ser mayor que cero.");
+        }
+        tarifaDiaria = nuevaTarifa;
     }
     
 	/**
@@ -302,13 +285,11 @@ return disponibles.size() + prestadas.size();* @param unaTarifa Tarifa diaria de
     }
   
     /**
-     * Retorna el catálogo de películas de la videotienda
-     * @param titulo 
-     * @return lista de películas existentes. lista != null.
+     * Retorna el catálogo de películas de la videotienda.
+     * @return Lista de películas existentes. lista != null.
      */
-    public ArrayList<Pelicula> darCatalogo(String titulo) {
+    public ArrayList<Pelicula> darCatalogo() {
         return catalogo;
-        //TODO Definir la signatura del método de acuerdo a la documentación e implementarlo.
     }
 
     //-----------------------------------------------------------------
