@@ -17,6 +17,8 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import javax.xml.catalog.Catalog;
+
 /**
  * Esta clase representa a la VideoTienda
  */
@@ -126,7 +128,10 @@ return disponibles.size() + prestadas.size();* @param unaTarifa Tarifa diaria de
      */
     public void afiliarCliente( String cedula, String nombre, String direccion ) throws Exception
     {
-    	Cliente nuevoCliente = new Cliente(cedula, nombre, direccion);
+    	if (buscarCliente(cedula) != null) {
+            throw new Exception("Ya existe un cliente con la cédula " + cedula);
+        }
+        Cliente nuevoCliente = new Cliente(cedula, nombre, direccion);
         clientes.add(nuevoCliente);
     	//TODO implementar
     }
@@ -159,10 +164,16 @@ return disponibles.size() + prestadas.size();* @param unaTarifa Tarifa diaria de
      */
     public void cargarSaldoCliente( String cedula, int monto ) throws Exception
     {
-    	Cliente cliente = buscarCliente(cedula);
-        if (cliente != null) {
-            cliente.cargarSaldo(monto);
+    	if (monto <= 0) {
+            throw new Exception("El monto debe ser mayor que cero.");
         }
+
+        Cliente cliente = buscarCliente(cedula);
+        if (cliente == null) {
+            throw new Exception("Cliente no encontrado con cédula: " + cedula);
+        }
+
+        cliente.cargarSaldo(monto);
     	//TODO implementar
     }
 
@@ -179,6 +190,37 @@ return disponibles.size() + prestadas.size();* @param unaTarifa Tarifa diaria de
      */
     public int alquilarPelicula( String titulo, String cedula ) throws Exception
     {
+    	Cliente cliente = buscarCliente(cedula);
+        if (cliente == null) {
+            throw new Exception("Cliente no encontrado.");
+        }
+
+        Pelicula pelicula = null;
+        for (Pelicula p : catalogo) {
+            if (p.darTitulo().equals(titulo)) {
+                pelicula = p;
+                break;
+            }
+        }
+
+        if (pelicula == null){
+            throw new Exception("Película no encontrada.");
+        }
+
+        int totalCopias = pelicula.darTotalCopias();
+        if (totalCopias == 0){
+            throw new Exception("No hay copias disponibles para la película.");
+        }
+
+        if (cliente.darSaldo() < tarifaDiaria) {
+            throw new Exception("Saldo insuficiente para alquilar la película.");
+        }
+
+        cliente.cargarSaldo(-tarifaDiaria); // Descuenta el valor
+        Pelicula.alquilarCopia(totalCopias);
+        totalCopias.alquilarCopia();
+
+        return totalCopias.darCodigo();
     	//TODO implementar
     }
 
@@ -193,25 +235,39 @@ return disponibles.size() + prestadas.size();* @param unaTarifa Tarifa diaria de
      */
     public void devolverCopia( String titulo, int numeroCopia, String cedula ) throws Exception
     {
+    	Cliente cliente = buscarCliente(cedula);
+        if (cliente == null) {
+            throw new Exception("Cliente no encontrado.");
+        }
+
+        Copia copia = cliente.buscarPelicula(cedula, numeroCopia);
+        if (copia == null) {
+            throw new Exception("El cliente no tiene esta copia alquilada.");
+        }
+
+        Pelicula.devolverCopia(copia);
+        copia.devolver();
     	//TODO implementar
 
     }
-
-
-
-
 
     /**
      * Retorna la lista de clientes de la videotienda
      * @return ArrayList la lista de clientes
      */
-    //TODO Definir la signatura del método de acuerdo a la documentación e implementarlo.
-
+    public ArrayList<Cliente> darClientes() {
+        return clientes;
+        //TODO Definir la signatura del método de acuerdo a la documentación e implementarlo.
+    }
+  
     /**
      * Retorna el catálogo de películas de la videotienda
      * @return lista de películas existentes. lista != null.
      */
-    //TODO Definir la signatura del método de acuerdo a la documentación e implementarlo.
+    public ArrayList<Pelicula> darCatalogo() {
+        return catalogo;
+        //TODO Definir la signatura del método de acuerdo a la documentación e implementarlo.
+    }
 
     //-----------------------------------------------------------------
     // Puntos de Extensión

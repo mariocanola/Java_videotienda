@@ -106,21 +106,21 @@ public class Pelicula
      */
     public void devolverCopia(int codigoCopia) throws Exception 
     {
-    	 Copia copiaADevolver = null;
+    	 Copia copiaDevolver = null;
          
          for (Copia copia : prestadas) {
              if (copia.darCodigo() == codigoCopia) {
-                 copiaADevolver = copia;
+                 copiaDevolver = copia;
                  break;
              }
          }
          
-         if (copiaADevolver == null) {
+         if (copiaDevolver == null) {
              throw new Exception("La copia no está prestada");
          }
          
-         prestadas.remove(copiaADevolver);
-         disponibles.add(copiaADevolver);
+         prestadas.remove(copiaDevolver);
+         disponibles.add(copiaDevolver);
     }
 
     /**

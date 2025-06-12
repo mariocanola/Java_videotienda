@@ -1,5 +1,6 @@
 package uniandes.cupi2.videotienda.mundo;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Representa un cliente de la videotienda.
@@ -12,19 +13,19 @@ public class Cliente {
     //-----------------------------------------------------------------
 	
     /**
-     * Nombre del cliente.
+     * Cedula del cliente.
      */
 	private String cedula; 
 	
 
     /**
-     * Cedula del cliente.
+     * Nombre del cliente.
      */
 	private String nombre;
 	
 
     /**
-     * Dirección del cliente.
+     * Direccion del cliente.
      */
 	private String direccion;
 	
@@ -44,20 +45,13 @@ public class Cliente {
     // Constructor
     //-----------------------------------------------------------------
 
-    /**
-     * Crea un nuevo cliente con los datos proporcionados.
-     * @param laCedula Cédula del cliente. laCedula != null.
-     * @param elNombre Nombre del cliente. elNombre != null.
-     * @param laDireccion Dirección del cliente. laDireccion != null.
-     */
-	@SuppressWarnings("unused")
-	public Cliente (String laCedula, String elNombre, String laDireccion)
+    public Cliente (String laCedula, String elNombre, String laDireccion)
 	{
-		this.cedula = laCedula;
-		this.nombre = elNombre;
-		this.direccion = laDireccion;
-		this.saldo = 0;
-	    this.copiasAlquiladas = new ArrayList<Copia>();	
+		cedula = laCedula;
+		nombre = elNombre;
+		direccion = laDireccion;
+		saldo = 0;
+	    copiasAlquiladas = new ArrayList<Copia>();	
 	}
 	
 
@@ -102,17 +96,6 @@ public class Cliente {
 	}
 	
 	/**
-     * Alquila una copia de película al cliente. <br>
-     * <b>pre: </b> La copia no está alquilada. <br>
-     * <b>post: </b> La copia se agrega a la lista de copias alquiladas del cliente.
-     * @param copia Copia a alquilar. copia != null.
-     */
-	public void alquilarCopia(Copia copia)
-	{
-		
-	}
-	
-	/**
      * Carga saldo a la cuenta del cliente. <br>
      * <b>pre: </b> monto > 0. <br>
      * <b>post: </b> El saldo del cliente se incrementa en el monto especificado.
@@ -120,7 +103,10 @@ public class Cliente {
      */
 	public void cargarSaldo(int monto)
 	{
-		
+		 if (monto <= 0) {
+	            throw new IllegalArgumentException("El monto debe ser positivo");
+	        }
+	        saldo += monto;
 	}
 	
 	/**
@@ -131,25 +117,22 @@ public class Cliente {
      */
 	public void descargarSaldo(int monto)
 	{
-		
-	}
-	
-	 /**
-     * Retorna el número de copias alquiladas por el cliente.
-     * @return Número de copias alquiladas.
-     */
-	public int darNumeroAlquiladas()
-	{
-		
+		if (monto <= 0) {
+            throw new IllegalArgumentException("El monto debe ser positivo");
+        }
+        if (monto > saldo) {
+            throw new IllegalStateException("Saldo insuficiente");
+        }
+        saldo -= monto;
 	}
 	
 	/**
      * Retorna la lista de copias alquiladas por el cliente.
      * @return Lista de copias alquiladas.
      */
-	public ArrayList darAlquiladas()
+	public ArrayList<Copia> darAlquiladas()
 	{
-		
+		 return copiasAlquiladas;
 	}
 	
 	/**
@@ -158,20 +141,12 @@ public class Cliente {
      * @param codigo Código de la copia a buscar. codigo > 0.
      * @return Copia encontrada o null si no existe.
      */
-	public Copia buscarPeliculaAlquilada(String pelicula, int codigo)
-	{
-		
-	}
-	
-	/**
-     * Devuelve una copia alquilada por el cliente. <br>
-     * <b>pre: </b> La copia está alquilada por este cliente. <br>
-     * <b>post: </b> La copia se remueve de la lista de copias alquiladas.
-     * @param pelicula Título de la película a devolver. pelicula != null.
-     * @param codigo Código de la copia a devolver. codigo > 0.
-     */
-	public void devolverCopia(String pelicula, int codigo)
-	{
-		
-	}
+	 public Copia buscarCopiaAlquilada(String titulo, int codigo) {
+	        Objects.requireNonNull(titulo, "El t�tulo no puede ser null");
+	        return copiasAlquiladas.stream()
+	            .filter(copia -> copia.darCodigo() == codigo && 
+	                           copia.darTituloPelicula().equals(titulo))
+	            .findFirst()
+	            .orElse(null);
+	    }
 }
