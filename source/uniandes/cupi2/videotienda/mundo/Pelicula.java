@@ -90,8 +90,7 @@ public class Pelicula
     public Copia alquilarCopia( )
     {
     	if (disponibles.size() > 0) {
-            Copia copia = disponibles.get(0);
-            disponibles.remove(0);
+            Copia copia = disponibles.remove(0);
             prestadas.add(copia);
             return copia;
         }

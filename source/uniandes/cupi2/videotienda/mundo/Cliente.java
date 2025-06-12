@@ -95,6 +95,11 @@ public class Cliente {
 		return direccion; 
 	}
 	
+	public void alquilarCopia()
+	{
+		
+	}
+	
 	/**
      * Carga saldo a la cuenta del cliente. <br>
      * <b>pre: </b> monto > 0. <br>
@@ -135,13 +140,17 @@ public class Cliente {
 		 return copiasAlquiladas;
 	}
 	
+	public int darNumeroAlquiladas()
+	{
+		 
+	}
 	/**
      * Busca una copia específica entre las películas alquiladas por el cliente.
      * @param pelicula Título de la película a buscar. pelicula != null.
      * @param codigo Código de la copia a buscar. codigo > 0.
      * @return Copia encontrada o null si no existe.
      */
-	 public Copia buscarCopiaAlquilada(String titulo, int codigo) {
+	 public Copia buscarPeliculaAlquilada(String titulo, int codigo) {
 	        Objects.requireNonNull(titulo, "El t�tulo no puede ser null");
 	        return copiasAlquiladas.stream()
 	            .filter(copia -> copia.darCodigo() == codigo && 
@@ -149,4 +158,9 @@ public class Cliente {
 	            .findFirst()
 	            .orElse(null);
 	    }
+	 
+	 public void devolverCopia(String pelicula, int codigo)
+	 {
+		 
+	 }
 }

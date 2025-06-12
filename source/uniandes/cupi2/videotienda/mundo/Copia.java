@@ -24,11 +24,19 @@ public class Copia {
      * Crea una copia con pel√≠cula y c√≥digo dados.
      * @param laPelicula Pel√≠cula a la que pertenece.
      * @param elCodigo C√≥digo de la copia.
+	 * @param elcodigo 
      */
-	public Copia(String laPelicula, int elCodigo)
+	public Copia (String laPelicula, int elCodigo)
 	{ 
-		tituloPelicula = laPelicula;
-		codigo = elCodigo;
+		if (tituloPelicula == null || tituloPelicula.trim().isEmpty()) {
+            throw new IllegalArgumentException("El tÌtulo no puede ser null o vacÌo");
+        }
+        if (codigo <= 0) {
+            throw new IllegalArgumentException("El cÛdigo debe ser positivo");
+        }
+        
+        tituloPelicula = laPelicula.trim();
+        codigo = elCodigo;
 	}
 	
 	 /**
