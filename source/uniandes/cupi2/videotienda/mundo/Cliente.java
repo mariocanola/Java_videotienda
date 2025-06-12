@@ -1,5 +1,6 @@
 package uniandes.cupi2.videotienda.mundo;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Representa un cliente de la videotienda.
@@ -12,19 +13,19 @@ public class Cliente {
     //-----------------------------------------------------------------
 	
     /**
-     * Nombre del cliente.
+     * Cedula del cliente.
      */
 	private String cedula; 
 	
 
     /**
-     * Cedula del cliente.
+     * Nombre del cliente.
      */
 	private String nombre;
 	
 
     /**
-     * Direcci√≥n del cliente.
+     * Direccion del cliente.
      */
 	private String direccion;
 	
@@ -44,20 +45,13 @@ public class Cliente {
     // Constructor
     //-----------------------------------------------------------------
 
-    /**
-     * Crea un nuevo cliente con los datos proporcionados.
-     * @param laCedula C√©dula del cliente. laCedula != null.
-     * @param elNombre Nombre del cliente. elNombre != null.
-     * @param laDireccion Direcci√≥n del cliente. laDireccion != null.
-     */
-	@SuppressWarnings("unused")
-	public Cliente (String laCedula, String elNombre, String laDireccion)
+    public Cliente (String laCedula, String elNombre, String laDireccion)
 	{
-		this.cedula = laCedula;
-		this.nombre = elNombre;
-		this.direccion = laDireccion;
-		this.saldo = 0;
-	    this.copiasAlquiladas = new ArrayList<Copia>();	
+		cedula = laCedula;
+		nombre = elNombre;
+		direccion = laDireccion;
+		saldo = 0;
+	    copiasAlquiladas = new ArrayList<Copia>();	
 	}
 	
 
@@ -102,14 +96,12 @@ public class Cliente {
 	}
 	
 	/**
-     * Alquila una copia de pel√≠cula al cliente. <br>
-     * <b>pre: </b> La copia no est√° alquilada. <br>
-     * <b>post: </b> La copia se agrega a la lista de copias alquiladas del cliente.
-     * @param copia Copia a alquilar. copia != null.
+     * Registra una copia como alquilada por el cliente.
+     * @param copia Copia alquilada.
      */
 	public void alquilarCopia(Copia copia)
 	{
-		
+		 copiasAlquiladas.add(copia);
 	}
 	
 	/**
@@ -120,7 +112,10 @@ public class Cliente {
      */
 	public void cargarSaldo(int monto)
 	{
-		
+		 if (monto <= 0) {
+	            throw new IllegalArgumentException("El monto debe ser positivo");
+	        }
+	        saldo += monto;
 	}
 	
 	/**
@@ -131,25 +126,31 @@ public class Cliente {
      */
 	public void descargarSaldo(int monto)
 	{
-		
-	}
-	
-	 /**
-     * Retorna el n√∫mero de copias alquiladas por el cliente.
-     * @return N√∫mero de copias alquiladas.
-     */
-	public int darNumeroAlquiladas()
-	{
-		
+		if (monto <= 0) {
+            throw new IllegalArgumentException("El monto debe ser positivo");
+        }
+        if (monto > saldo) {
+            throw new IllegalStateException("Saldo insuficiente");
+        }
+        saldo -= monto;
 	}
 	
 	/**
      * Retorna la lista de copias alquiladas por el cliente.
      * @return Lista de copias alquiladas.
      */
-	public ArrayList darAlquiladas()
+	public ArrayList<Copia> darAlquiladas()
 	{
-		
+		 return copiasAlquiladas;
+	}
+	
+	/**
+     * Retorna el n˙mero de copias alquiladas por el cliente.
+     * @return N˙mero de copias alquiladas.
+     */
+	public int darNumeroAlquiladas()
+	{
+		 return copiasAlquiladas.size();
 	}
 	
 	/**
@@ -158,20 +159,25 @@ public class Cliente {
      * @param codigo C√≥digo de la copia a buscar. codigo > 0.
      * @return Copia encontrada o null si no existe.
      */
-	public Copia buscarPeliculaAlquilada(String pelicula, int codigo)
-	{
-		
-	}
-	
-	/**
-     * Devuelve una copia alquilada por el cliente. <br>
-     * <b>pre: </b> La copia est√° alquilada por este cliente. <br>
-     * <b>post: </b> La copia se remueve de la lista de copias alquiladas.
-     * @param pelicula T√≠tulo de la pel√≠cula a devolver. pelicula != null.
-     * @param codigo C√≥digo de la copia a devolver. codigo > 0.
-     */x	
-	public void devolverCopia(String pelicula, int codigo)
-	{
-		
-	}
+	 public Copia buscarPeliculaAlquilada(String titulo, int codigo) {
+	        Objects.requireNonNull(titulo, "El tÌtulo no puede ser null");
+	        return copiasAlquiladas.stream()
+	            .filter(copia -> copia.darCodigo() == codigo && 
+	                           copia.darTituloPelicula().equals(titulo))
+	            .findFirst()
+	            .orElse(null);
+	    }
+	 
+	 /**
+	     * Registra la devoluciÛn de una copia alquilada.
+	     * @param titulo TÌtulo de la pelÌcula de la copia. titulo != null.
+	     * @param codigo CÛdigo de la copia a devolver. codigo > 0.
+	     */
+	 public void devolverCopia(String pelicula, int codigo)
+	 {
+		 Copia copia = buscarPeliculaAlquilada(pelicula, codigo);
+	        if (copia != null) {
+	            copiasAlquiladas.remove(copia);
+	        } 
+	 }
 }

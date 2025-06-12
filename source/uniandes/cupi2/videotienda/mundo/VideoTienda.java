@@ -17,6 +17,8 @@ import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import javax.xml.catalog.Catalog;
+
 /**
  * Esta clase representa a la VideoTienda
  */
@@ -35,11 +37,13 @@ public class VideoTienda
     /**
      * Clientes
      */
+    private ArrayList<Cliente> clientes;
     //TODO declare el atributo
 
     /**
      * Catálogo de películas
      */
+    private ArrayList<Pelicula> catalogo;
     //TODO declare el atributo
     
     //-----------------------------------------------------------------
@@ -48,10 +52,14 @@ public class VideoTienda
 
     /**
      * Crea una videotienda sin películas registradas.
-     * @param unaTarifa Tarifa diaria de alquiler. tarifa > 0.
+return disponibles.size() + prestadas.size();* @param unaTarifa Tarifa diaria de alquiler. tarifa > 0.
      */
     public VideoTienda( int unaTarifa )
     {
+    	tarifaDiaria = unaTarifa;
+    	clientes = new ArrayList<>();
+        catalogo = new ArrayList<>();
+    
     	//TODO implementar inicializando los atributos
     }
 
@@ -120,6 +128,11 @@ public class VideoTienda
      */
     public void afiliarCliente( String cedula, String nombre, String direccion ) throws Exception
     {
+    	if (buscarCliente(cedula) != null) {
+            throw new Exception("Ya existe un cliente con la cédula " + cedula);
+        }
+        Cliente nuevoCliente = new Cliente(cedula, nombre, direccion);
+        clientes.add(nuevoCliente);
     	//TODO implementar
     }
     
@@ -130,10 +143,28 @@ public class VideoTienda
      */
     public Cliente buscarCliente( String cedula )
     {
+    	for (Cliente cliente : clientes) {
+            if (cliente.darCedula().equals(cedula)) {
+                return cliente;
+            }
+        }
+        return null;
     	//TODO implementar
     }
-
-
+    
+    /**
+     * Busca la película dado el título.
+     * @param titulo Título de la película. titulo != null.
+     * @return La película correspondiente al título, o null si no se encuentra.
+     */
+    public Pelicula buscarPelicula(String titulo) {
+        for (Pelicula p : catalogo) {
+            if (p.darTitulo().equals(titulo)) {
+                return p;
+            }
+        }
+        return null;
+    }
 
     /**
      * Adiciona el monto dado al saldo disponible del cliente. <br>
@@ -145,6 +176,16 @@ public class VideoTienda
      */
     public void cargarSaldoCliente( String cedula, int monto ) throws Exception
     {
+    	if (monto <= 0) {
+            throw new Exception("El monto debe ser mayor que cero.");
+        }
+
+        Cliente cliente = buscarCliente(cedula);
+        if (cliente == null) {
+            throw new Exception("Cliente no encontrado con cédula: " + cedula);
+        }
+
+        cliente.cargarSaldo(monto);
     	//TODO implementar
     }
 
@@ -159,10 +200,26 @@ public class VideoTienda
      * @throws Exception Si no hay copias disponibles.
      * @throws Exception Si el saldo del cliente no es suficiente para el alquiler.
      */
-    public int alquilarPelicula( String titulo, String cedula ) throws Exception
-    {
-    	//TODO implementar
+    public void alquilarPelicula(String titulo, String cedula) throws Exception {
+
+        Cliente cliente = buscarCliente(cedula);
+        if (cliente == null) {
+            throw new Exception("Cliente no encontrado.");
+        }
+
+        Pelicula pelicula = buscarPelicula(titulo);
+        if (pelicula == null) {
+            throw new Exception("Película no encontrada.");
+        }
+
+        if (pelicula.darNumeroDisponibles() == 0) {
+            throw new Exception("No hay copias disponibles para alquilar.");
+        }
+
+        Copia copia = pelicula.alquilarCopia();
+        cliente.alquilarCopia(copia);
     }
+    	//TODO implementar
 
     /**
      * Devuelve a la videotienda una copia alquilada por el cliente identificado con la cédula dada. <br>
@@ -173,27 +230,67 @@ public class VideoTienda
      * @throws Exception Si el cliente no existe.
      * @throws Exception Si el cliente no tiene la copia alquilada.
      */
-    public void devolverCopia( String titulo, int numeroCopia, String cedula ) throws Exception
-    {
-    	//TODO implementar
+    public void devolverCopia(String titulo, int numeroCopia, String cedula) throws Exception {
+        Cliente cliente = buscarCliente(cedula);
+        if (cliente == null) {
+            throw new Exception("Cliente no encontrado.");
+        }
 
+        Copia copia = cliente.buscarPeliculaAlquilada(titulo, numeroCopia);
+        if (copia == null) {
+            throw new Exception("El cliente no tiene esta copia alquilada.");
+        }
+
+        Pelicula pelicula = buscarPelicula(titulo);
+        if (pelicula == null) {
+            throw new Exception("Película no encontrada en el catálogo.");
+        }
+
+        pelicula.devolverCopia(numeroCopia);
+        cliente.devolverCopia(titulo, numeroCopia);
     }
-
-
-
-
-
+    
     /**
+     * Agrega una nueva copia a la película con el título dado.
+     * @param titulo Título de la película. titulo != null.
+     * @throws Exception Si la película no existe en el catálogo.
+     */
+    public void agregarCopiaPelicula(String titulo) throws Exception {
+        Pelicula pelicula = buscarPelicula(titulo);
+        if (pelicula == null) {
+            throw new Exception("Película no encontrada: " + titulo);
+        }
+        pelicula.agregarCopia();
+    }
+    
+    /**
+     * Modifica la tarifa diaria de alquiler.
+     * @param nuevaTarifa Nueva tarifa. nuevaTarifa > 0.
+     * @throws Exception Si la nueva tarifa no es válida.
+     */
+    public void modificarTarifa(int nuevaTarifa) throws Exception {
+        if (nuevaTarifa <= 0) {
+            throw new Exception("La tarifa debe ser mayor que cero.");
+        }
+        tarifaDiaria = nuevaTarifa;
+    }
+    
+	/**
      * Retorna la lista de clientes de la videotienda
      * @return ArrayList la lista de clientes
      */
-    //TODO Definir la signatura del método de acuerdo a la documentación e implementarlo.
-
+    public ArrayList<Cliente> darListaClientes() {
+        return clientes;
+        //TODO Definir la signatura del método de acuerdo a la documentación e implementarlo.
+    }
+  
     /**
-     * Retorna el catálogo de películas de la videotienda
-     * @return lista de películas existentes. lista != null.
+     * Retorna el catálogo de películas de la videotienda.
+     * @return Lista de películas existentes. lista != null.
      */
-    //TODO Definir la signatura del método de acuerdo a la documentación e implementarlo.
+    public ArrayList<Pelicula> darCatalogo() {
+        return catalogo;
+    }
 
     //-----------------------------------------------------------------
     // Puntos de Extensión
