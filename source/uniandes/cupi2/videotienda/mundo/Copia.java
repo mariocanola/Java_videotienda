@@ -28,10 +28,10 @@ public class Copia {
      */
 	public Copia (String laPelicula, int elCodigo)
 	{ 
-		if (tituloPelicula == null || tituloPelicula.trim().isEmpty()) {
+		if (laPelicula == null || laPelicula.trim().isEmpty()) {
             throw new IllegalArgumentException("El título no puede ser null o vacío");
         }
-        if (codigo <= 0) {
+        if (elCodigo <= 0) {
             throw new IllegalArgumentException("El código debe ser positivo");
         }
         

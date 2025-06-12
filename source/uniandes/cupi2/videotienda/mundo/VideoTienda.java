@@ -200,7 +200,7 @@ return disponibles.size() + prestadas.size();* @param unaTarifa Tarifa diaria de
      * @throws Exception Si no hay copias disponibles.
      * @throws Exception Si el saldo del cliente no es suficiente para el alquiler.
      */
-    public void alquilarPelicula(String titulo, String cedula) throws Exception {
+    public void alquilarPelicula (String titulo, String cedula) throws Exception {
 
         Cliente cliente = buscarCliente(cedula);
         if (cliente == null) {
