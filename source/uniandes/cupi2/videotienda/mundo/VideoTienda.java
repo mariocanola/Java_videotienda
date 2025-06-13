@@ -200,9 +200,9 @@ return disponibles.size() + prestadas.size();* @param unaTarifa Tarifa diaria de
      * @throws Exception Si no hay copias disponibles.
      * @throws Exception Si el saldo del cliente no es suficiente para el alquiler.
      */
-    public void alquilarPelicula (String titulo, String cedula) throws Exception {
+    public int alquilarPelicula (String titulo, String cedula) throws Exception {
 
-        Cliente cliente = buscarCliente(cedula);
+    	Cliente cliente = buscarCliente(cedula);
         if (cliente == null) {
             throw new Exception("Cliente no encontrado.");
         }
@@ -215,9 +215,18 @@ return disponibles.size() + prestadas.size();* @param unaTarifa Tarifa diaria de
         if (pelicula.darNumeroDisponibles() == 0) {
             throw new Exception("No hay copias disponibles para alquilar.");
         }
+        
+        if (cliente.darSaldo() < tarifaDiaria) {
+            throw new Exception("Saldo insuficiente para alquilar la película. Saldo actual: " + cliente.darSaldo() + ", Costo de alquiler: " + tarifaDiaria);
+        }
 
         Copia copia = pelicula.alquilarCopia();
         cliente.alquilarCopia(copia);
+        
+        // Descontar el saldo del cliente
+        cliente.descargarSaldo(tarifaDiaria);
+
+        return copia.darCodigo(); 
     }
     	//TODO implementar
 
@@ -268,6 +277,7 @@ return disponibles.size() + prestadas.size();* @param unaTarifa Tarifa diaria de
      * @param nuevaTarifa Nueva tarifa. nuevaTarifa > 0.
      * @throws Exception Si la nueva tarifa no es válida.
      */
+    
     public void modificarTarifa(int nuevaTarifa) throws Exception {
         if (nuevaTarifa <= 0) {
             throw new Exception("La tarifa debe ser mayor que cero.");
